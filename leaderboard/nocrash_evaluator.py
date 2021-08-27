@@ -12,6 +12,7 @@ Provisional code to evaluate Autonomous Agents for the CARLA Autonomous Driving 
 """
 from __future__ import print_function
 
+import csv
 import traceback
 import argparse
 import itertools
@@ -53,6 +54,71 @@ sensors_to_icons = {
     "sensor.camera.semantic_segmentation": "carla_sem",
 }
 
+class NoCrashStatisticsManager:
+    
+    headers = [
+        'town',
+        'traffic',
+        'weather',
+        'start',
+        'target',
+        'route_completion',
+        'lights_ran',
+        'duration',
+    ]
+    
+    def __init__(self, args):
+        
+        self.finished_tasks = {
+            'Town01': {},
+            'Town02': {}
+        }
+        
+        output_file = os.path.join(args.output_path, "stats.csv")
+        
+        if args.resume and os.path.exists(output_file):
+            self.load(output_file)
+            self.csv_file = open(output_file, 'a')
+            self.csv_writer = csv.DictWriter(self.csv_file, fieldnames=self.headers)
+        else:
+            self.csv_file = open(output_file, 'w')
+            self.csv_writer = csv.DictWriter(self.csv_file, fieldnames=self.headers)
+            self.csv_writer.writeheader()
+
+    def load(self, logdir):
+        with open(logdir, 'r') as file:
+            log = csv.DictReader(file)
+            for row in log:
+                self.finished_tasks[row['town']][(
+                    int(row['traffic']),
+                    int(row['weather']),
+                    int(row['start']),
+                    int(row['target']),
+                )] = [
+                    float(row['route_completion']),
+                    int(row['lights_ran']),
+                    float(row['duration']),
+                ]
+    
+    def log(self, town, traffic, weather, start, target, route_completion, lights_ran, duration):
+        self.csv_writer.writerow({
+            'town'            : town,
+            'traffic'         : traffic,
+            'weather'         : weather,
+            'start'           : start,
+            'target'          : target,
+            'route_completion': route_completion,
+            'lights_ran'      : lights_ran,
+            'duration'        : duration,
+        })
+
+        self.csv_file.flush()
+        
+    def is_finished(self, town, route, weather, traffic):
+        start, target = route
+        key = (int(traffic), int(weather), int(start), int(target))
+        return key in self.finished_tasks[town]
+
 
 class NoCrashEvaluator(object):
 
@@ -67,12 +133,12 @@ class NoCrashEvaluator(object):
     wait_for_world = 20.0  # in seconds
     frame_rate = 20.0  # in Hz
 
-    def __init__(self, args, statistics_manager):
+    def __init__(self, args):
         """
         Setup CARLA client and world
         Setup ScenarioManager
         """
-        self.statistics_manager = statistics_manager
+        self.statistics_manager = NoCrashStatisticsManager(args)
         self.sensors = None
         self.sensor_icons = []
 
