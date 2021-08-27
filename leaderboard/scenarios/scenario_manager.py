@@ -137,9 +137,10 @@ class ScenarioManager(object):
                 if snapshot:
                     timestamp = snapshot.timestamp
             if timestamp:
-                self._tick_scenario(timestamp)
+                # TODO: Remove this hack to be able to run leaderboard properly
+                self._tick_scenario(timestamp, world)
 
-    def _tick_scenario(self, timestamp):
+    def _tick_scenario(self, timestamp, world):
         """
         Run next tick of scenario and the agent and tick the world.
         """
@@ -156,7 +157,7 @@ class ScenarioManager(object):
             try:
                 self._agent_watchdog.resume()
                 self._agent_watchdog.update()
-                ego_action = self._agent()
+                ego_action = self._agent(world)
                 self._agent_watchdog.pause()
 
             # Special exception inside the agent that isn't caused by the agent
