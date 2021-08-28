@@ -53,6 +53,8 @@ sensors_to_icons = {
     "sensor.stitch_camera.semantic_segmentation": "carla_stich_sem",
     "sensor.camera.semantic_segmentation": "carla_sem",
 }
+        
+TRAFFIC_LVL = ["Empty", "Regular", "Dense"]
 
 class NoCrashStatisticsManager:
     
@@ -302,7 +304,7 @@ class NoCrashEvaluator(object):
         entry_status = "Started"
 
         start_idx, target_idx = route
-        traffic_lvl = ["Empty", "Regular", "Dense"][traffic_idx]
+        traffic_lvl = TRAFFIC_LVL[traffic_idx]
 
         print(
             "\n\033[1m========= Preparing {} {}: {} to {}, weather {} =========".format(
@@ -453,20 +455,20 @@ class NoCrashEvaluator(object):
         Run the challenge mode
         """
 
-        # if args.resume:
-        # route_indexer.resume(args.checkpoint)
-        # self.statistics_manager.resume(args.checkpoint)
-        # else:
-        # self.statistics_manager.clear_record(args.checkpoint)
-        # route_indexer.save_state(args.checkpoint)
-
         # Load routes
         leaderboard_path = os.environ["LEADERBOARD_ROOT"]
         with open(f"{leaderboard_path}/leaderboard/scenarios/suite/nocrash_{args.town}.txt", "r") as f:
             routes = [tuple(map(int, l.split())) for l in f.readlines()]
 
         weathers = {"train": [1, 3, 6, 8], "test": [10, 14]}.get(args.weather)
-        traffics = [0, 1, 2]
+        if args.traffic_level == "all":
+            traffics = [0, 1, 2]
+        elif args.traffic_level == "empty":
+            traffics = [0]
+        elif args.traffic_level == "regular":
+            traffics = [1]
+        elif args.traffic_level == "dense":
+            traffics = [2]
 
         for traffic, route, weather in itertools.product(traffics, routes, weathers):
             if self.statistics_manager.is_finished(self.town, route, weather, traffic):
