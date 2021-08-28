@@ -209,7 +209,8 @@ class NoCrashEvaluator(object):
 
         # Simulation still running and in synchronous mode?
         if (
-            self.manager
+            hasattr(self, "manager")
+            and self.manager
             and self.manager.get_running_status()
             and hasattr(self, "world")
             and self.world

@@ -68,11 +68,11 @@ class AgentWrapper(object):
         """
         self._agent = agent
 
-    def __call__(self, world):
+    def __call__(self, world, ego_vehicle):
         """
         Pass the call directly to the agent
         """
-        return self._agent(world)
+        return self._agent(world, ego_vehicle)
 
     def setup_sensors(self, vehicle, debug_mode=False):
         """

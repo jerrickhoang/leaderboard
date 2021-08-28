@@ -157,7 +157,8 @@ class ScenarioManager(object):
             try:
                 self._agent_watchdog.resume()
                 self._agent_watchdog.update()
-                ego_action = self._agent(world)
+                # Hack to get access to ego.
+                ego_action = self._agent(world, self.ego_vehicles[0])
                 self._agent_watchdog.pause()
 
             # Special exception inside the agent that isn't caused by the agent
@@ -233,3 +234,20 @@ class ScenarioManager(object):
             global_result = '\033[91m'+'FAILURE'+'\033[0m'
 
         ResultOutputProvider(self, global_result)
+
+    def get_nocrash_diagnostics(self):
+        
+        route_completion = None
+        lights_ran = None
+        duration = round(self.scenario_duration_game, 2)
+        
+        for criterion in self.scenario.get_criteria():
+            actual_value = criterion.actual_value
+            name = criterion.name
+            
+            if name == 'RouteCompletionTest':
+                route_completion = float(actual_value)
+            elif name == 'RunningRedLightTest':
+                lights_ran = int(actual_value)
+        
+        return route_completion, lights_ran, duration
