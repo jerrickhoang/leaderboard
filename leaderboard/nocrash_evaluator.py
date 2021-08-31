@@ -192,9 +192,10 @@ class NoCrashEvaluator(object):
         """
         Terminate scenario ticking when receiving a signal interrupt
         """
-        if self._agent_watchdog and not self._agent_watchdog.get_status():
-            raise RuntimeError("Timeout: Agent took too long to setup")
-        elif self.manager:
+        # TODO: HACK
+        # if self._agent_watchdog and not self._agent_watchdog.get_status():
+        #    raise RuntimeError("Timeout: Agent took too long to setup")
+        if self.manager:
             self.manager.signal_handler(signum, frame)
 
     def __del__(self):
