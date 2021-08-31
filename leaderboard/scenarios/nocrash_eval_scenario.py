@@ -6,8 +6,8 @@ import numpy.random as random
 import carla
 import py_trees
 
-from navigation.global_route_planner import GlobalRoutePlanner
-from navigation.global_route_planner_dao import GlobalRoutePlannerDAO
+from agents.navigation.global_route_planner import GlobalRoutePlanner
+from agents.navigation.global_route_planner_dao import GlobalRoutePlannerDAO
 
 from srunner.scenarioconfigs.scenario_configuration import ScenarioConfiguration, ActorConfigurationData
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
