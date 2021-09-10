@@ -99,10 +99,10 @@ class AgentWrapper(object):
                     bp.set_attribute('image_size_x', str(sensor_spec['width']))
                     bp.set_attribute('image_size_y', str(sensor_spec['height']))
                     bp.set_attribute('fov', str(sensor_spec['fov']))
-                    bp.set_attribute('lens_circle_multiplier', str(3.0))
-                    bp.set_attribute('lens_circle_falloff', str(3.0))
-                    bp.set_attribute('chromatic_aberration_intensity', str(0.5))
-                    bp.set_attribute('chromatic_aberration_offset', str(0))
+                    # bp.set_attribute('lens_circle_multiplier', str(3.0))
+                    # bp.set_attribute('lens_circle_falloff', str(3.0))
+                    # bp.set_attribute('chromatic_aberration_intensity', str(0.5))
+                    # bp.set_attribute('chromatic_aberration_offset', str(0))
 
                     sensor_location = carla.Location(x=sensor_spec['x'], y=sensor_spec['y'],
                                                      z=sensor_spec['z'])
